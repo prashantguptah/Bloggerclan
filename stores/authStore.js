@@ -1,38 +1,45 @@
 import { defineStore } from "pinia";
-import { ref, onMounted } from "vue";
-import { faker } from "@faker-js/faker";
+import { ref } from "vue";
+import { useFetch } from "#app";
 
 export const useAuthStore = defineStore("authStore", () => {
   const user = ref(null);
+  const token = ref(null);
 
-  const loadUser = () => {
-    user.value = JSON.parse(localStorage.getItem("user")) || null;
-  };
+  const register = async (newUser) => {
+    const { data, error } = await useFetch("/api/auth/register", {
+      method: "POST",
+      body: newUser,
+    });
 
-  const register = (newUser) => {
-    newUser.profileImage = faker.image.avatar();
-    localStorage.setItem("user", JSON.stringify(newUser));
-    user.value = newUser;
-  };
-
-  const login = (email) => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser && storedUser.email === email) {
-      user.value = storedUser;
-      return true;
+    if (error.value) {
+      alert(error.value.data.error);
+      return;
     }
-    return false;
+
+    alert(data.value.message);
+  };
+
+  const login = async (email, password) => {
+    const { data, error } = await useFetch("/api/auth/login", {
+      method: "POST",
+      body: { email, password },
+    });
+
+    if (error.value) {
+      alert(error.value.data.error);
+      return false;
+    }
+
+    user.value = data.value.user;
+    token.value = data.value.token;
+    return true;
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
     user.value = null;
+    token.value = null;
   };
 
-  // Load user data when the store is initialized
-  onMounted(() => {
-    loadUser();
-  });
-
-  return { user, loadUser, register, login, logout };
+  return { user, token, register, login, logout  };
 });

@@ -19,13 +19,14 @@
   const router = useRouter();
   
   const email = ref("");
+  const password = ref("");
   
-  const loginUser = () => {
-    if (authStore.login(email.value)) {
-      router.push("/");
-    } else {
-      alert("Invalid credentials");
-    }
-  };
+  const loginUser = async () => {
+  if (await authStore.login(email.value, password.value)) {
+    router.push("/");
+  } else {
+    alert("Invalid credentials");
+  }
+};
   </script>
   

@@ -23,9 +23,9 @@
   const email = ref("");
   const password = ref("");
   
-  const registerUser = () => {
-    authStore.register({ email: email.value, password: password.value });
-    router.push("/");
-  };
+  const registerUser = async () => {
+  await authStore.register({ email: email.value, password: password.value });
+  router.push("/login");
+};
   </script>
   

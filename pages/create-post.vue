@@ -57,7 +57,7 @@ const addNewPost = () => {
     id: Date.now(),
     title: title.value,
     content: content.value,
-    image: image.value, // Store image
+    image: image.value, 
     author: authStore.user.name,
     email: authStore.user.email,
   };

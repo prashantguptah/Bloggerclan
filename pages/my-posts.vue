@@ -11,7 +11,7 @@
       class="relative w-[27rem] h-[27rem] overflow-hidden space-y-6 p-4 border rounded my-4 transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
       @click="navigateToPost(post.id)"
     >
-      <!-- Post Image -->
+     
       <div
         v-if="post.image"
         class="w-full h-[12rem] mb-4 flex align-center justify-center"
@@ -23,16 +23,16 @@
         />
       </div>
 
-      <div class="flex justify-between">
-        <h2 class="font-bold">{{ post.title }}</h2>
+      <div class="flex justify-between ">
+        <h2 class="font-bold line-clamp-1 break-words overflow-hidden text-ellipsis">{{ post.title }}</h2>
         <button>
           <span v-if="post.liked" class="text-red-500 text-xl">❤️ {{ post.likes }}</span>
           <span v-else class="text-gray-400 text-xl">🤍 {{ post.likes }}</span>
         </button>
       </div>
 
-      <p class="text-gray-600 mb-4">
-        {{ truncateText(post.content, 20) }}
+      <p class="line-clamp-2 break-words overflow-hidden text-ellipsis">
+        {{ post.content}}
       </p>
 
       <div class="mt-2 flex gap-4">
@@ -48,19 +48,19 @@
      </div>
   
 
-    <!-- Edit Post Modal -->
+ 
     <div v-if="editingPost" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-6 rounded-lg shadow-lg w-[30rem]">
         <h2 class="text-xl font-bold mb-4">Edit Post</h2>
         <input v-model="editingPost.title" class="w-full p-2 border rounded mb-2" placeholder="Post Title" />
         <textarea v-model="editingPost.content" class="w-full h-[15rem] p-2 border rounded mb-2" placeholder="Post Content"></textarea>
         
-        <!-- Image Preview -->
+   
         <div v-if="editingPost.image" class="w-full h-[12rem] mb-4 flex justify-center items-center">
           <img :src="editingPost.image" alt="Selected Image" class=" object-cover rounded-lg" />
         </div>
 
-        <!-- Upload New Image -->
+      
         <input type="file" @change="handleImageUpload" class="mb-2" />
 
         <div class="flex justify-end gap-4 mt-4">
@@ -93,18 +93,18 @@ const myPosts = computed(() => {
 const editingPost = ref(null);
 
 const startEdit = (post) => {
-  editingPost.value = { ...post }; // Create a copy of the post to edit
+  editingPost.value = { ...post }; 
 };
 
 const saveEdit = () => {
   if (editingPost.value) {
     postStore.editPost(editingPost.value);
-    editingPost.value = null; // Exit edit mode
+    editingPost.value = null; 
   }
 };
 
 const cancelEdit = () => {
-  editingPost.value = null; // Exit edit mode without saving
+  editingPost.value = null;
 };
 
 const deletePost = (id) => {
@@ -115,19 +115,15 @@ const navigateToPost = (id) => {
   router.push(`/post/${id}`);
 };
 
-const truncateText = (text, limit) => {
-  if (!text) return "";
-  const words = text.split(" ");
-  return words.length > limit ? words.slice(0, limit).join(" ") + "..." : text;
-};
 
-// Handle image upload
+
+
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      editingPost.value.image = e.target.result; // Update image preview
+      editingPost.value.image = e.target.result; 
     };
     reader.readAsDataURL(file);
   }

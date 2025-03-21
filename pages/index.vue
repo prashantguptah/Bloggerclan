@@ -22,7 +22,7 @@
         </div>
 
         <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold text-gray-800">{{ post.title }}</h2>
+          <h2 class="text-2xl font-bold text-gray-800 line-clamp-1 break-words overflow-hidden text-ellipsis">{{ post.title }}</h2>
           <button @click.stop="postStore.toggleLike(post.id)">
             <span v-if="post.liked" class="text-red-500">❤️</span>
             <span v-else class="text-gray-400">🤍</span>
@@ -30,8 +30,8 @@
         </div>
 
         <!-- Post Content -->
-        <p class="text-gray-600 mb-4">
-          {{ truncateText(post.content, 20) }}
+        <p class="line-clamp-2 break-words overflow-hidden text-ellipsis">
+          {{ post.content }}
         </p>
 
         <!-- Bookmark Button -->
@@ -100,11 +100,7 @@ const navigateToPost = (id) => {
   router.push(`/post/${id}`);
 };
 
-const truncateText = (text, limit) => {
-  if (!text) return "";
-  const words = text.split(" ");
-  return words.length > limit ? words.slice(0, limit).join(" ") + "..." : text;
-};
+
 
 onMounted(() => {
   postStore.loadPosts();

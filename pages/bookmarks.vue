@@ -24,9 +24,9 @@
         </div>
 
 
-      <h2 class="font-bold">{{ post.title }}</h2>
-      <p class="text-gray-600 mb-4">
-          {{ truncateText(post.content, 20) }}
+      <h2 class="font-bold line-clamp-1 break-words overflow-hidden text-ellipsis">{{ post.title }}</h2>
+      <p class="line-clamp-2 break-words overflow-hidden text-ellipsis">
+          {{ post.content}}
         </p>
       <div class="mt-2 flex gap-4">
         <button
