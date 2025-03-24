@@ -1,10 +1,34 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useFetch } from "#app";
 
 export const useAuthStore = defineStore("authStore", () => {
   const user = ref(null);
   const token = ref(null);
+
+  // Load token from localStorage on the client side only
+  const loadStoredAuth = () => {
+    if (process.client) {
+      const storedUser = localStorage.getItem("user");
+      const storedToken = localStorage.getItem("authToken");
+  
+      if (storedUser && storedUser !== "undefined") {
+        try {
+          user.value = JSON.parse(storedUser);
+        } catch (error) {
+          console.error("Error parsing stored user:", error);
+          user.value = null;
+        }
+      }
+  
+      token.value = storedToken || null;
+    }
+  };
+
+  // Call loadStoredAuth only on the client side
+  onMounted(() => {
+    loadStoredAuth();
+  });
 
   const register = async (newUser) => {
     const { data, error } = await useFetch("/api/auth/register", {
@@ -33,13 +57,25 @@ export const useAuthStore = defineStore("authStore", () => {
 
     user.value = data.value.user;
     token.value = data.value.token;
+
+    if (process.client) {
+      localStorage.setItem("user", JSON.stringify(data.value.user));
+      localStorage.setItem("authToken", data.value.token);
+    }
+
+    console.log("Token stored:", data.value.token);
     return true;
   };
 
   const logout = () => {
     user.value = null;
     token.value = null;
+    if (process.client) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("authToken");
+    }
+    navigateTo("/login")
   };
 
-  return { user, token, register, login, logout  };
+  return { user, token, register, login, logout };
 });

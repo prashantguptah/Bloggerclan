@@ -5,5 +5,10 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', "@pinia/nuxt"],
   runtimeConfig: {
     mongodbUri: process.env.MONGODB_URI
-  }
+  },
+   nitro: {
+    hooks: {
+      "request": "~/server/middleware/auth.js", // Ensure this runs on every request
+    },
+  },
 })

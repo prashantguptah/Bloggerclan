@@ -5,7 +5,7 @@ import { faker } from "@faker-js/faker";
 export default defineEventHandler(async (event) => {
   await connectDB();
 
-  const body = await readBody(event); // Get request body
+  const body = await readBody(event); 
   const { email, password } = body;
 
   if (!email || !password) {
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     const newUser = new User({
       email,
       password,
-      profileImage: faker.image.avatar(), // Generate a random profile image
+      profileImage: faker.image.avatar(), 
     });
 
     await newUser.save();

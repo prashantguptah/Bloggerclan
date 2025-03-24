@@ -9,6 +9,7 @@
       </template>
 
       <template v-else>
+        <NuxtLink to="/allpost" class="mx-2">All Post</NuxtLink>
         <NuxtLink to="/create-post" class="mx-2">Create Post</NuxtLink>
         <NuxtLink to="/my-posts" class="mx-2">My Posts</NuxtLink>
         <NuxtLink to="/bookmarks" class="mx-2">Bookmarks</NuxtLink>
@@ -25,7 +26,7 @@
 
           <div
             v-if="isDropdownOpen"
-            class="absolute right-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg py-2"
+            class="absolute right-0 mt-2 w-48  bg-white text-gray-900 rounded-lg shadow-lg py-2 z-[100]"
           >
             <NuxtLink to="/editprofile" class="block px-4 py-2 hover:bg-gray-200">Edit Profile</NuxtLink>
             <NuxtLink to="/settings" class="block px-4 py-2 hover:bg-gray-200">Settings</NuxtLink>

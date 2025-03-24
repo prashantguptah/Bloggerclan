@@ -2,6 +2,7 @@ import User from "~/server/models/User";
 import connectDB from "~/server/utils/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { setCookie } from "h3"; 
 
 export default defineEventHandler(async (event) => {
   await connectDB();
@@ -21,6 +22,14 @@ export default defineEventHandler(async (event) => {
      
      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "secretKey", {
       expiresIn: "7d",
+    });
+    
+    
+     setCookie(event, "authToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
     return {
