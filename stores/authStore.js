@@ -6,7 +6,7 @@ export const useAuthStore = defineStore("authStore", () => {
   const user = ref(null);
   const token = ref(null);
 
-  // Load token from localStorage on the client side only
+
   const loadStoredAuth = () => {
     if (process.client) {
       const storedUser = localStorage.getItem("user");
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore("authStore", () => {
     }
   };
 
-  // Call loadStoredAuth only on the client side
+ 
   onMounted(() => {
     loadStoredAuth();
   });
@@ -57,6 +57,7 @@ export const useAuthStore = defineStore("authStore", () => {
 
     user.value = data.value.user;
     token.value = data.value.token;
+    console.log("uservalue",user.value.email)
 
     if (process.client) {
       localStorage.setItem("user", JSON.stringify(data.value.user));

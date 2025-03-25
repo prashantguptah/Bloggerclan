@@ -1,7 +1,7 @@
 <template>
   <div class="h-[95vh] bg-gray-100 text-gray-900 flex justify-center items-center">
     <div class="bg-white p-8 rounded-xl shadow-lg w-[45rem] border border-gray-300">
-      <!-- ✅ Page Title -->
+     
       <h1 class="text-3xl font-bold text-center mb-6">Create a New Post</h1>
 
      

@@ -28,7 +28,7 @@
           <button @click.stop="postStore.toggleLike(post)">
             <span v-if="post.likes.includes(authStore.user?.id)" class="text-red-500">❤️</span>
             <span v-else class="text-gray-400">🤍</span>
-            <span>({{ post.likes.length }})</span> 
+            <span>{{ post.likes.length }}</span> 
           </button>
         </div>
 

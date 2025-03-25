@@ -49,7 +49,7 @@ export const usePostStore = defineStore("postStore", () => {
   
 
    const toggleBookmark = async (post) => {
-    try {
+ try {
       const response = await $fetch("/api/posts/bookmark", {
         method: "POST",
         body: { postId: post._id },
@@ -111,26 +111,62 @@ export const usePostStore = defineStore("postStore", () => {
   };
 
 
-  const addComment = async (postId, comment) => {
-    const res = await fetch(`/api/posts/${postId}/comment`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(comment),
-    });
-    const data = await res.json();
-    return data;
+  const addComment = async (postId, content) => {
+    console.log("asssasaa", authStore.user.email)
+    try {
+      if (!authStore.user) {
+        throw new Error("You must be logged in to comment");
+      }
+  
+      const comment = {
+        postId,
+        content,
+        authorEmail: authStore.user?.email
+      };
+  
+      const response = await $fetch(`/api/posts/${postId}/comment`, { 
+        method: "POST",
+        body: comment
+      });
+  
+      if (response.success) {
+        const index = posts.value.findIndex(p => p._id === postId);
+        if (index !== -1) {
+          posts.value[index] = response.post;
+        }
+        return response.post;
+      }
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+      throw error;
+    }
   };
 
-  const replyToComment = async (postId, commentId, reply) => {
-    const res = await fetch(`/api/posts/${postId}/comments/${commentId}/reply`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reply),
-    });
-    const data = await res.json();
-    return data;
-  };
+  const addReply = async (postId, commentId, replyContent) => {
+    const authorEmail = "Author"
+    try {
+      const response = await $fetch(`/api/posts/${postId}/reply`, {
+        method: "POST",
+        body: { commentId, content: replyContent, authorEmail },
+      });
 
+      if (response.success) {
+        const post = posts.value.find((p) => p._id === postId);
+        if (post) {
+          const comment = post.comments.find((c) => c._id === commentId);
+          if (comment) {
+            if (!comment.replies) comment.replies = [];
+            comment.replies.push(response.reply);
+          }
+        }
+      }
+      console.log("addreplyresponse", response)
+      console.log("reply saved")
+    } catch (error) {
+      console.error("Failed to add reply:", error);
+    }
+  };
+  
   
 
   const loadBookmarks = async () => {
@@ -145,9 +181,10 @@ export const usePostStore = defineStore("postStore", () => {
  
 
     onMounted(() => {
+
       loadPosts();
       loadBookmarks();
     });
 
-  return { posts, addPost, deletePost, bookmarks ,toggleLike, toggleBookmark, loadPosts, loadBookmarks,editPost, addComment, replyToComment  };
+  return { posts, addPost, deletePost, bookmarks ,toggleLike, toggleBookmark, loadPosts, loadBookmarks,editPost, addComment , addReply };
 });
