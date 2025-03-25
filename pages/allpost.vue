@@ -2,9 +2,9 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold">Latest Articles</h1>
 
-    <div v-if="postStore.posts && postStore.posts.length > 0" class="flex flex-wrap gap-4 justify-center">
+    <div  v-if="paginatedPosts.length > 0" class="flex flex-wrap gap-4 justify-center">
       <div
-        v-for="post in postStore.posts.slice(0, 5)"
+        v-for="post in paginatedPosts"
         :key="post.id"
         class="relative bg-white w-[27rem] h-[27rem] overflow-hidden space-y-3 p-4 shadow-lg rounded-2xl p-6 my-4 transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
         @click="navigateToPost(post._id)"
@@ -48,6 +48,27 @@
     </div>
 
     <p v-else class="text-gray-500">No posts available.</p>
+
+    
+     <div class="flex justify-center mt-6 space-x-4 fixed bottom-0 right-0 left-0">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+
+      <span class="text-lg font-semibold">Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </template>
 
@@ -60,6 +81,32 @@ import { useRouter } from "vue-router";
 const postStore = usePostStore();
 const authStore = useAuthStore();
 const router = useRouter();
+
+const currentPage = ref(1);
+const postsPerPage = 10;
+
+
+const paginatedPosts = computed(() => {
+  const start = (currentPage.value - 1) * postsPerPage;
+  return postStore.posts.slice(start, start + postsPerPage);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(postStore.posts.length / postsPerPage);
+});
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
 
 const navigateToPost = (id) => {
   router.push(`/post/${id}`);

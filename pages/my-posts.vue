@@ -1,57 +1,86 @@
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">My Posts</h1>
-    <div v-if="myPosts.length === 0" class="text-gray-500">
+    <div v-if="paginatedPosts.length === 0" class="text-gray-500">
       You have not created any posts yet.
     </div>
-     <div class="flex flex-wrap gap-4 justify-center">
-      <div
-      v-for="post in myPosts"
-      :key="post._id"
-      class="relative w-[27rem] h-[27rem] overflow-hidden space-y-6 p-4 border rounded my-4 transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
-      @click="navigateToPost(post._id)"
+
+
+    <div class="flex flex-wrap gap-4 justify-center">
+  <div
+    v-for="post in paginatedPosts"
+    :key="post._id"
+    class="relative w-[27rem] h-[27rem] overflow-hidden p-5 border border-gray-300 rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
+    @click="navigateToPost(post._id)"
+  >
+    <!-- Image Section -->
+    <div
+      v-if="post.image"
+      class="w-full h-[12rem] flex items-center justify-center overflow-hidden rounded-lg"
     >
-     
-      <div
-        v-if="post.image"
-        class="w-full h-[12rem] mb-4 flex align-center justify-center"
-      >
-        <img
-          :src="post.image"
-          alt="Post Image"
-          class=" object-cover rounded-lg object-center"
-        />
-      </div>
-
-      <div class="flex justify-between ">
-        <h2 class="font-bold line-clamp-1 break-words overflow-hidden text-ellipsis">{{ post.title }}</h2>
-        <button @click.stop="postStore.toggleLike(post)">
-            <span v-if="post.likes.includes(authStore.user?.id)" class="text-red-500">❤️</span>
-            <span v-else class="text-gray-400">🤍</span>
-            <span>{{ post.likes.length }}</span> 
-          </button>
-      </div>
-
-      <p class="line-clamp-2 break-words overflow-hidden text-ellipsis">
-        {{ post.content}}
-      </p>
-
-      <div class="mt-2 flex gap-4">
-        <button @click.stop="startEdit(post)" class="bg-blue-500 text-white px-3 py-1 rounded">
-          Edit
-        </button>
-        <button @click.stop="deletePost(post._id)" class="bg-red-500 text-white px-3 py-1 rounded">
-          Delete
-        </button>
-      </div>
+      <img
+        :src="post.image"
+        alt="Post Image"
+        class="w-full h-full object-contain rounded-lg"
+      />
     </div>
 
-     </div>
+    <!-- Title & Like Button -->
+    <div class="flex justify-between items-center mt-4">
+      <h2 class="text-lg font-semibold text-gray-800 line-clamp-1">
+        {{ post.title }}
+      </h2>
+      <button @click.stop="postStore.toggleLike(post)" class="flex items-center gap-1">
+        <span v-if="post.likes.includes(authStore.user?.id)" class="text-red-500">❤️</span>
+        <span v-else class="text-gray-400">🤍</span>
+        <span class="text-gray-600 text-sm">{{ post.likes.length }}</span> 
+      </button>
+    </div>
+
+    <!-- Post Content -->
+    <p class="text-gray-600 text-sm mt-2 line-clamp-2">
+      {{ post.content }}
+    </p>
+
+    <!-- Buttons -->
+    <div class="mt-4 flex justify-between mt-8">
+      <button @click.stop="startEdit(post)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition">
+        Edit
+      </button>
+      <button @click.stop="deletePost(post._id)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+     
+
+      <!-- Pagination Controls -->
+    <div v-if="totalPages > 0" class="flex justify-center mt-6 space-x-4 fixed bottom-0 left-0 right-0">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+
+      <span class="text-lg font-semibold">Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
   
 
  
      <div v-if="editingPost" class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center">
-  <div class="bg-white p-6 rounded-lg shadow-2xl w-[30rem] border border-gray-300">
+  <div class="bg-white p-6 rounded-lg shadow-2xl w-[60rem] border border-gray-300">
     
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Edit Post</h2>
 
@@ -106,6 +135,9 @@ const authStore = useAuthStore();
 const postStore = usePostStore();
 const router = useRouter();
 
+const currentPage = ref(1);
+const postsPerPage = 10;
+
 onMounted(async () => {
   await postStore.loadPosts();
   
@@ -120,6 +152,30 @@ const myPosts = computed(() => {
   });
   
 });
+
+
+const paginatedPosts = computed(() => {
+  const start = (currentPage.value - 1) * postsPerPage;
+  return myPosts.value.slice(start, start + postsPerPage);
+});
+
+
+const totalPages = computed(() => {
+  return Math.ceil(myPosts.value.length / postsPerPage);
+});
+
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
 
 
 const editingPost = ref(null);

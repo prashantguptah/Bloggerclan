@@ -20,7 +20,7 @@ home page  of blogginf website <template>
   
         <div v-if="postStore.posts && postStore.posts.length > 0" class="flex flex-wrap gap-4 justify-center">
           <div
-            v-for="post in postStore.posts.slice(0, )"
+            v-for="post in postStore.posts.slice(0, 6)"
             :key="post.id"
             class="relative bg-white w-[27rem] h-[25rem] px-[30px] overflow-hidden space-y-3 p-4 shadow-lg rounded-2xl my-4 transition-all duration-300 hover:shadow-2xl hover:scale-105 cursor-pointer"
             @click="navigateToPost(post._id)"
