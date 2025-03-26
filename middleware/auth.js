@@ -1,9 +1,12 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-    const authStore = useAuthStore();
-    
-    // If the user is not logged in, redirect to home page
-    if (!authStore.token) {
-      return navigateTo("/");
-    }
+  if (process.server) return; // Ensure it only runs on the client side
+
+  const authToken = process.client ? localStorage.getItem("authToken") : null;
+
+  const protectedRoutes = ["/bookmarks", "/create-post", "/my-posts"]; // Add other protected routes
+
+  if (!authToken && protectedRoutes.includes(to.path)) {
+    return navigateTo("/login");
+  }
   });
   

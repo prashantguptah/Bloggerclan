@@ -21,11 +21,14 @@ export default defineEventHandler(async (event) => {
     }
      
      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "secretKey", {
-      expiresIn: "7d",
+      expiresIn: "15m",  // Access token expires in 15 minutes
+    });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_SECRET || "refreshKey", {
+      expiresIn: "7d",  // Refresh token expires in 7 days
     });
     
     
-     setCookie(event, "authToken", token, {
+    setCookie(event, "refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

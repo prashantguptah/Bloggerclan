@@ -76,6 +76,10 @@
 </template>
 
 <script setup>
+
+definePageMeta({
+  middleware: "auth",
+});
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { usePostStore } from "~/stores/postStore";
@@ -123,5 +127,11 @@ const navigateToPost = (id) => {
   router.push(`/post/${id}`);
 };
 
+
+
+onMounted(() => {
+  postStore.posts;
+
+});
 
 </script>

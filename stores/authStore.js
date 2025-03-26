@@ -28,6 +28,8 @@ export const useAuthStore = defineStore("authStore", () => {
  
   onMounted(() => {
     loadStoredAuth();
+
+    setInterval(refreshAccessToken, 14 * 60 * 1000);
   });
 
   const register = async (newUser) => {
@@ -68,7 +70,19 @@ export const useAuthStore = defineStore("authStore", () => {
     return true;
   };
 
-  const logout = () => {
+  const refreshAccessToken = async () => {
+    const { data, error } = await useFetch("/api/auth/refresh", {
+      method: "POST",
+    });
+
+    if (!error.value && data.value.accessToken) {
+      token.value = data.value.accessToken;
+      localStorage.setItem("authToken", data.value.accessToken);
+    }
+  };
+
+  const logout = async () => {
+    await useFetch("/api/auth/logout", { method: "POST" });
     user.value = null;
     token.value = null;
     if (process.client) {
@@ -78,5 +92,5 @@ export const useAuthStore = defineStore("authStore", () => {
     navigateTo("/login")
   };
 
-  return { user, token, register, login, logout };
+  return { user, token, register, refreshAccessToken,  login, logout };
 });

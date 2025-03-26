@@ -1,13 +1,11 @@
 import jwt from "jsonwebtoken";
+import { getCookie } from "h3";
 import User from "~/server/models/User";
 
 export default defineEventHandler(async (event) => {
-  const token =
-    getCookie(event, "authToken") || // If stored in cookies
-    event.req.headers.authorization?.split(" ")[1]; // If sent in headers
+  const token = getCookie(event, "authToken");
 
   if (!token) {
-    console.warn("No token found in request.");
     event.context.auth = null;
     return;
   }
@@ -19,11 +17,11 @@ export default defineEventHandler(async (event) => {
     if (user) {
       event.context.auth = { user };
     } else {
-      console.warn("User not found.");
       event.context.auth = null;
     }
   } catch (error) {
-    console.error("Invalid token:", error);
+    // If token expired, set auth to null
+    console.error("Token expired or invalid:", error);
     event.context.auth = null;
   }
 });

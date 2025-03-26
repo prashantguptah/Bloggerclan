@@ -73,6 +73,11 @@
 </template>
 
 <script setup>
+
+definePageMeta({
+  middleware: "auth",
+});
+
 import { onMounted,computed  } from "vue";
 import { usePostStore } from "~/stores/postStore";
 import { useAuthStore } from "@/stores/authStore";

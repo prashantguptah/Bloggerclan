@@ -36,7 +36,7 @@
                 class="w-10 h-10 rounded-full border border-gray-300"
               />
               <div>
-                <p class="text-sm font-semibold">{{ authStore.user.email }}</p>
+                <p class="text-[12px] font-semibold">{{ authStore.user.email }}</p>
               </div>
             </div>
 

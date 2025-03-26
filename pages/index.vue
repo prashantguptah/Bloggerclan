@@ -1,7 +1,7 @@
 home page  of blogginf website <template>
     <div>
   
-      <section class="bg-gradient-to-r from-blue-500 to-white text-white text-center py-20">
+      <section class="bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-center py-20">
         <h1 class="text-5xl font-bold mb-4">Welcome to Our Blog</h1>
         <p class="text-lg text-gray-200 max-w-2xl mx-auto">
           Discover amazing articles on various topics and bookmark your favorites!
@@ -15,10 +15,14 @@ home page  of blogginf website <template>
       </section>
   
      
-      <section ref="articlesSection" class="p-6">
+      <section ref="articlesSection" class="p-6 min-h-[60vh]">
         <h1 class="text-2xl font-bold text-gray-800">Latest Articles</h1>
-  
-        <div v-if="postStore.posts && postStore.posts.length > 0" class="flex flex-wrap gap-4 justify-center">
+
+        <div v-if="loading" class="flex justify-center items-center h-40">
+          <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500"></div>
+        </div>
+        
+        <div v-else-if="postStore.posts && postStore.posts.length > 0" class="flex flex-wrap gap-4 justify-center">
           <div
             v-for="post in postStore.posts.slice(0, 6)"
             :key="post.id"
@@ -32,7 +36,7 @@ home page  of blogginf website <template>
   
         
             <h2 class="text-2xl font-bold text-gray-800 line-clamp-1 break-words overflow-hidden text-ellipsis">
-              {{ post.title }}
+              {{ post.title }}s
             </h2>
   
             <p class="line-clamp-3 break-words overflow-hidden text-ellipsis">
@@ -62,6 +66,7 @@ home page  of blogginf website <template>
   import { ref, onMounted } from "vue";
   import { usePostStore } from "~/stores/postStore";
   import { useRouter } from "vue-router";
+  const loading = ref(true);
   
   const postStore = usePostStore();
   const router = useRouter();
@@ -78,6 +83,7 @@ home page  of blogginf website <template>
   
   onMounted(() => {
     postStore.loadPosts();
+    loading.value = false;
   });
   </script>
   

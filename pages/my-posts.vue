@@ -1,12 +1,18 @@
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">My Posts</h1>
-    <div v-if="paginatedPosts.length === 0" class="text-gray-500">
+
+    <div v-if="loading" class="flex justify-center items-center h-40">
+      <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500"></div>
+    </div>
+    <div v-else-if="paginatedPosts.length === 0" class="text-gray-500">
       You have not created any posts yet.
     </div>
 
+   
 
-    <div class="flex flex-wrap gap-4 justify-center">
+
+    <div v-if="!loading" class="flex flex-wrap gap-4 justify-center">
   <div
     v-for="post in paginatedPosts"
     :key="post._id"
@@ -126,6 +132,10 @@
 </template>
 
 <script setup>
+
+definePageMeta({
+  middleware: "auth",
+});
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
@@ -137,10 +147,12 @@ const router = useRouter();
 
 const currentPage = ref(1);
 const postsPerPage = 10;
+const loading = ref(false); 
 
 onMounted(async () => {
+  loading.value = true;
   await postStore.loadPosts();
-  
+  loading.value = false;
 });
 
 const myPosts = computed(() => {
