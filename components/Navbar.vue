@@ -26,8 +26,20 @@
 
           <div
             v-if="isDropdownOpen"
-            class="absolute right-0 mt-2 w-48  bg-white text-gray-900 rounded-lg shadow-lg py-2 z-[100]"
+            class="absolute right-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg py-2 z-[100]"
           >
+           
+            <div class="flex items-center gap-3 px-4 py-2 border-b">
+              <img
+                :src="authStore.user.profileImage || 'https://via.placeholder.com/40'"
+                alt="User Profile"
+                class="w-10 h-10 rounded-full border border-gray-300"
+              />
+              <div>
+                <p class="text-sm font-semibold">{{ authStore.user.email }}</p>
+              </div>
+            </div>
+
             <NuxtLink to="/editprofile" class="block px-4 py-2 hover:bg-gray-200">Edit Profile</NuxtLink>
             <NuxtLink to="/settings" class="block px-4 py-2 hover:bg-gray-200">Settings</NuxtLink>
             <button
