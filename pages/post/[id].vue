@@ -14,14 +14,20 @@
       <div class="flex justify-between items-center text-gray-600 mt-3">
         <p class="text-lg font-medium">Author: <span class="text-blue-600">{{ post.authorEmail }}</span></p>
 
-        <div class="flex gap-2">
+        <div class="flex gap-8 justify-between items-center">
           <button @click.stop="postStore.toggleLike(post)">
             <span v-if="post.likes.includes(authStore.user?.id)" class="text-red-500">❤️</span>
             <span v-else class="text-gray-400">🤍</span>
             <span>{{ post.likes.length }}</span>
           </button>
-          <p class="text-sm">{{ formatDate(post.createdAt) }}</p>
+          <p class="text-sm"><span class="text-[14px] font-bold">Created At: </span>{{ formatDate(post.createdAt) }}</p>
         </div>
+               
+          <div>
+            <p class="text-[14px] font-bold">
+              Average Rating: <span v-if="avgRating !== null">{{ avgRating.toFixed(1) }}</span> ⭐
+            </p>
+          </div>
       </div>
 
       <img v-if="post.image" :src="post.image" alt="Post Image"
@@ -30,6 +36,30 @@
       <article class="mt-4 text-lg text-gray-800 leading-relaxed bg-white p-6 rounded-lg shadow-md border border-gray-200">
         <pre class="whitespace-pre-wrap break-words">{{ post.content }}</pre>
       </article>
+
+     
+        <div class="mt-6 p-6 bg-white shadow-md rounded-lg border border-gray-200 max-w-md mx-auto">
+          <h3 class="text-lg font-semibold text-gray-800 mb-1">Rate this Post</h3>
+          
+          <div class="flex justify-center space-x-2 bg-gray-600 rounded-lg">
+            <span
+              v-for="star in 5"
+              :key="star"
+              class="text-[60px] cursor-pointer transition-colors"
+              :class="userRating >= star ? 'text-yellow-400' : 'text-white'"
+              @click="setRating(star)"
+            >
+              *
+            </span>
+          </div>
+
+          <button
+            @click="submitRating"
+            class="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Submit Rating
+          </button>
+        </div>
 
       <!-- Comments Section -->
       <div class="mt-8 bg-white p-6 rounded-lg shadow-md border border-gray-200">
@@ -164,18 +194,32 @@ const formatDate = (dateString) => {
   });
 };
 
-onMounted(() => {
-  console.log("sortedcomments", sortedComments)
-  console.log("postvalue", post.value)
-  console.log("post", post);
-  if (!post.value) {
-    alert("Post not found");
-    router.push("/");
-   
+onMounted(async () => {
+  await postStore.loadPosts();
+  post.value = postStore.posts.find(p => p._id === route.params.id);
+  if (post.value) {
+    avgRating.value = post.value.ratings.length
+      ? post.value.ratings.reduce((acc, r) => acc + r.rating, 0) / post.value.ratings.length
+      : 0;
   }
 });
 
 
+
+const avgRating = ref(null);
+const userRating = ref(null);
+
+const setRating = (rating) => {
+  userRating.value = rating;
+};
+
+const submitRating = async () => {
+  if (!userRating.value) return;
+  await postStore.ratePost(post.value._id, userRating.value);
+  avgRating.value = post.value.ratings.length
+    ? post.value.ratings.reduce((acc, r) => acc + r.rating, 0) / post.value.ratings.length
+    : 0;
+};
 
 const addComment = async () => {
   if (!newComment.value.trim()) return;

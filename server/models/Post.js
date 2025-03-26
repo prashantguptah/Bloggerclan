@@ -13,6 +13,13 @@ const CommentSchema = new mongoose.Schema({
   replies: [ReplySchema]
 });
 
+
+const RatingSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 }
+});
+
+
 const PostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
@@ -22,7 +29,8 @@ const PostSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  comments: [CommentSchema]
+  comments: [CommentSchema],
+  ratings: [RatingSchema] 
 });
 
 export default mongoose.model("Post", PostSchema);

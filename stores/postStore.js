@@ -178,6 +178,28 @@ export const usePostStore = defineStore("postStore", () => {
     }
   };
 
+  const ratePost = async (postId, rating) => {
+    try {
+      if (!authStore.user) {
+        throw new Error("You must be logged in to rate a post");
+      }
+  
+      const response = await $fetch("/api/posts/rate", {
+        method: "POST",
+        body: { postId, userId: authStore.user?.id, rating },
+      });
+  
+      if (response.success) {
+        const post = posts.value.find(p => p._id === postId);
+        if (post) {
+          post.ratings = response.post.ratings;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to rate post:", error);
+    }
+  };
+
  
 
     onMounted(() => {
@@ -186,5 +208,5 @@ export const usePostStore = defineStore("postStore", () => {
       loadBookmarks();
     });
 
-  return { posts, addPost, deletePost, bookmarks ,toggleLike, toggleBookmark, loadPosts, loadBookmarks,editPost, addComment , addReply };
+  return { posts, addPost, deletePost, bookmarks ,toggleLike, toggleBookmark, loadPosts, loadBookmarks,editPost, addComment , addReply, ratePost  };
 });
